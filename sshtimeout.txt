@@ -1,0 +1,81 @@
+Git问题：解决“ssh:connect to host github.com port 22: Connection timed out”
+
+无敌喜之郎
+
+于 2024-01-17 15:35:44 发布
+
+阅读量1.2k
+ 收藏 12
+
+点赞数 9
+文章标签： git ssh github
+版权
+字面上理解就是github在端口号22上面的链接超时了。
+可以考虑更换git端口号或者重新生成密钥，我重新生成没有解决问题，采用的第一种方案
+
+找到.ssh文件夹，然后在.ssh文件里面新建一个config文件，注意是文件，不是文件夹，这个文件没有任何类型，就是config。
+
+touch config
+创建完成后打开输入
+
+Host github.com
+User git
+Hostname ssh.github.com
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/id_rsa
+Port 443
+在保存后可以进行测试
+
+ssh -T git@github.com
+输入yes而不是y，如果能够连接到自己的github就说明可以了
+————————————————
+版权声明：本文为CSDN博主「无敌喜之郎」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/m0_54944506/article/details/135652028
+
+
+
+
+
+ssh: connect to host github.com port 22: Connection timed out【已解决】ssh -T git@github.com（报22端口错误）
+我的前置步骤是：
+
+1、使用git bash输入git config -l 命令可以看到以下信息：
+diff,astextplain,textconv=astextplain
+filter,lfs.clean=git-lfs clean -- %f
+filter.lfs.smudgegit-lfs smudge -- %f
+filter.lfs,process=git-lfs filter-process
+filter.lfs.required=true
+http.sslbackend=openssl
+http.sslcainfo=D:/git/done/Git/mingw64/etc/ssl/certs/ca-bundle.crt
+core.autocrlf=true
+core.fscache-true
+core.symlinks=true
+pull.rebase=false
+credential.helper:manager
+credential.https://dev.azure.com.usehttppath=true
+init,defaultbranch=master
+user.name-.
+user.email=.
+
+
+2、我的key已经用key-gen生成，并将公钥id_rsa_pub复制张贴到github网站
+
+当在用git bash执行 ssh -T git@github.com 命令报错，如题目错误
+
+我的解决：
+
+我发现用cmd命令ping github.com响应超时
+
+因为我使用的是win操作系统，到host文件进行修改 c:windowssystem32driversetc，
+
+#localhost name resolution is handled within DNs itself
+# 127.0.0.1  localhost
+#  ::1            localhost
+140.82.112.3 github.com
+
+这个查询域名对应的ip地址用的网站为：GitHub.com - GitHub: Let's build from here · GitHub
+
+上面这个网站要翻墙使用 
+————————————————
+版权声明：本文为CSDN博主「haibianyoushark」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_39993896/article/details/135072672
